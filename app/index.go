@@ -3,7 +3,7 @@ package schemas
 import (
 	"log"
 
-	v1 "github.com/OlegStrokan/schema-registry/app/schemas/parcel-event/versions/v2"
+	v1 "github.com/OlegStrokan/schema-registry/app/schemas/parcel-event/versions/v1"
 	v2 "github.com/OlegStrokan/schema-registry/app/schemas/parcel-event/versions/v2"
 	"github.com/OlegStrokan/schema-registry/app/schemas/utils"
 )
