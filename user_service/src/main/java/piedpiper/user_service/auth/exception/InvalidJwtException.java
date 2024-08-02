@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.auth.exception;
+package piedpiper.user_service.auth.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;

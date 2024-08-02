@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.user.entity;
+package piedpiper.user_service.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import piedpiper.backend.exchange.role.types.Role;
+import piedpiper.user_service.role.types.Role;
 
 import java.util.Collection;
 import java.util.List;

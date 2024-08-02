@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.auth.controller;
+package piedpiper.user_service.auth.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -9,12 +9,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import piedpiper.backend.exchange.auth.TokenService;
-import piedpiper.backend.exchange.auth.dtos.JwtDto;
-import piedpiper.backend.exchange.auth.dtos.SignInDto;
-import piedpiper.backend.exchange.auth.dtos.SignUpDto;
-import piedpiper.backend.exchange.auth.service.AuthService;
-import piedpiper.backend.exchange.user.entity.User;
+import piedpiper.user_service.auth.TokenService;
+import piedpiper.user_service.auth.dtos.JwtDto;
+import piedpiper.user_service.auth.dtos.SignInDto;
+import piedpiper.user_service.auth.dtos.SignUpDto;
+import piedpiper.user_service.auth.service.AuthService;
+import piedpiper.user_service.user.entity.User;
 import jakarta.validation.Valid;
 
 

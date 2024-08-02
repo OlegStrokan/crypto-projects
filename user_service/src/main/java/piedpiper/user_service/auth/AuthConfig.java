@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.auth;
+package piedpiper.user_service.auth;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

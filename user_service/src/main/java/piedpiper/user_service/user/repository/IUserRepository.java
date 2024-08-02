@@ -1,7 +1,7 @@
-package piedpiper.backend.exchange.user.repository;
+package piedpiper.user_service.user.repository;
 
 import org.springframework.security.core.userdetails.UserDetails;
-import piedpiper.backend.exchange.user.entity.User;
+import piedpiper.user_service.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IUserRepository extends JpaRepository<User, Long> {

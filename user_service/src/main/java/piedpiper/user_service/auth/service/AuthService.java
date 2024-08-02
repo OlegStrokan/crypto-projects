@@ -1,14 +1,14 @@
-package piedpiper.backend.exchange.auth.service;
+package piedpiper.user_service.auth.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import piedpiper.backend.exchange.auth.dtos.SignUpDto;
-import piedpiper.backend.exchange.auth.exception.InvalidJwtException;
-import piedpiper.backend.exchange.user.entity.User;
-import piedpiper.backend.exchange.user.repository.IUserRepository;
+import piedpiper.user_service.auth.dtos.SignUpDto;
+import piedpiper.user_service.auth.exception.InvalidJwtException;
+import piedpiper.user_service.user.entity.User;
+import piedpiper.user_service.user.repository.IUserRepository;
 
 @Service
 public class AuthService implements UserDetailsService {

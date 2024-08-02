@@ -1,7 +1,7 @@
-package piedpiper.backend.exchange.auth.dtos;
+package piedpiper.user_service.auth.dtos;
 
 
-import piedpiper.backend.exchange.role.types.Role;
+import piedpiper.user_service.role.types.Role;
 
 public record SignUpDto(
         String login,

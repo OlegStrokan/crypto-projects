@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.auth.dtos;
+package piedpiper.user_service.auth.dtos;
 
 public record SignInDto(
         String login,

@@ -1,4 +1,4 @@
-package piedpiper.backend.exchange.role.types;
+package piedpiper.user_service.role.types;
 
 public enum Role
 {
