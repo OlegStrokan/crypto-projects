@@ -21,7 +21,7 @@ public class AuthService implements UserDetailsService {
         return repository.findByLogin(username);
     }
 
-    public UserDetails signUp(SignUpDto data) throws InvalidJwtException {
+    public synchronized UserDetails signUp(SignUpDto data) throws InvalidJwtException {
         var user = repository.findByLogin(data.login());
 
         if (user != null) {
