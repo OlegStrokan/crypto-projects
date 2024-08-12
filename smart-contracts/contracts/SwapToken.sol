@@ -33,7 +33,7 @@ contract StackingDapp is Ownable, ReentrancyGuard {
     PoolInfo[] public poolInfo;
 
     mapping(address => uint256) public depositedTokens;
-    mapping(uint256 => mapping(address => UserInfo)) public UserInfo;
+    mapping(uint256 => mapping(address => UserInfo)) public userInfo;
 
     Notification[] public notifications;
 
@@ -53,7 +53,7 @@ contract StackingDapp is Ownable, ReentrancyGuard {
         require(_amount > 0, "Amount should be greater then 0!");
 
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo string user = userInfo[_pid][msg.sender];
+        UserInfo storage user = userInfo[_pid][msg.sender];
 
         if (user.amount > 0) {
             uint pending = _calcPendingRewards(user, _pid);
@@ -80,7 +80,7 @@ contract StackingDapp is Ownable, ReentrancyGuard {
     function withdraw(uint _pid, uint _amount) public nonReentrant {
 
         PoolInfo storage pool = poolInfo[_pid];
-        UserInfo string user = userInfo[_pid][msg.sender];
+        UserInfo storage user = userInfo[_pid][msg.sender];
 
         require(user.amount >= _amount, "Widthdraw amount exceed the balance");
         require(user.lockUntil <= block.timestamp, "Lock is Active"!);
@@ -106,7 +106,7 @@ contract StackingDapp is Ownable, ReentrancyGuard {
 
     }
 
-    function _calcPendingReward(UserInfo storage user, uint _pid) internal view returns {
+    function _calcPendingReward(UserInfo storage user, uint _pid) internal view returns(uint) {
             PoolInfo storage pool = poolInfo[_pid]
             uint daysPassed = (block.timestamp - user.lastRewardAt) / 60
 
@@ -119,27 +119,54 @@ contract StackingDapp is Ownable, ReentrancyGuard {
      }
     
 
-    function pendingReward() {
+    function pendingReward(uint _pid, address _user) public view returns(uint) {
+        UserInfo storage user = userInfo[_pid][_user]
 
+        return _calclPendingReward(user, _pid);
     }
 
-    function sweep() {
+    function sweep(address token, uint256 amount) external onlyOwner {
+        uint256 token_balance = IERC20(token).balanceOf(address(this))
+        require (amount <= token_balance, "Amount exceeds balance")
+        require (token_balance - amount >= depositedToken[token], "Can't widthraw deposited tokens")
 
+        IERC20(token).safeTransfer(msg.sender, amount);
+        
     }
 
-    function modityPool() {
-
+    function modityPool(uint _pid, uint _apy) public onlyOwner {
+          PoolInfo string pool = poolInfo[_pid]
+         pool.apy = _apy;
     }
     
-    function claimReward() {
+    function claimReward(uint _pid) {
+         PoolInfo storage pool = poolInfo[_pid]
+         UserInfo string user=  userInfo[_pid][msg.sender];
 
+        require(user.lockUntil <= block.timestamp, "Lock is active");
+
+        uint256 pending = _calcPendingReward(user, _pid);
+        require(pending > 0, "No rewards to claim")
+
+        user.lastRewardAt = block.timestamp;
+
+        pool.rewardToken.transfer(msg.sender, pending);
+
+        _createNotification(_pid, _amount, msg.sender, "Claim");
     }
 
-    function _createNotification() {
-
+    function _createNotification(uint _id, uint _amount, address user, string memory _typeof) internal {
+        notifications.push(Notification({
+            poolID: _id,
+            amount: _amount;
+            user: _user;
+            typeOf: _typeOf,
+            timestamp: block.timestamp;
+        }))
     }
 
-    function getNotifications() {
+    function getNotifications() public view returns(Notifications[] memory) {
 
+        return notifications;
     }
 }
