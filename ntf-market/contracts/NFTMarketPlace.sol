@@ -80,7 +80,7 @@ contract NFTMarketplace is ERC721URIStorage {
             payable(msg.sender),
             payable(address(this)),
             price,
-            false,
+            false
         );
 
         // @notice transfer nft from sender to contract
@@ -173,7 +173,7 @@ contract NFTMarketplace is ERC721URIStorage {
         return items;
     }
 
-    function fetchItemsListed() public view return(MarketItem[] memory) {
+    function fetchItemsListed() public view returns(MarketItem[] memory) {
         uint256 totalCount = _tokenIds.current();
         uint256 itemCount = 0;
         uint256 currentIndex  = 0;
