@@ -1,8 +1,7 @@
-# Hello Open Zeppelin Upgradeable Contracts
+## Hello Open Zeppelin Upgradeable Contracts (Transparent Proxy Pattern)
 
--   [x] simple upgrade (deploy, verify, verify proxy, upgrade)
--   [ ] unsafe (constructor, initialize more than once, reorder storage, kill)
--   [ ] ERC20 upgrade
+- simple upgrade (deploy, verify, verify proxy, upgrade)
+- unsafe (constructor, initialize more than once, reorder storage, kill)
 
 ```shell
 npx hardhat compile
