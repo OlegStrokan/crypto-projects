@@ -10,6 +10,7 @@ contract PaymentChannel {
     event Deposit(address indexed sender, uint256 amount);
     event PaymentListed(address indexed sender, uint256 amount);
     event ChannelClosed(address indexed closer, uint256 remainingAmount);
+
     constructor(address recipientAddress) {
         require(recipientAddress != address(0), "Invalid recipient address");
         owner = msg.sender;

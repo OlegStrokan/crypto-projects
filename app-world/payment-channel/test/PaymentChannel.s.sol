@@ -9,6 +9,7 @@ contract PaymentChannelTest is Test {
     address payable public owner;
     address payable public recipient;
 
+    // @dev: init (constructor)
     function setUp() public {
         owner = payable(address(0x123));
         recipient = payable(address(0x456));
@@ -37,7 +38,7 @@ contract PaymentChannelTest is Test {
         paymentChannel.deposit{value: 0}();
     }
 
-    // @dev: shold list all payments
+    // @dev: shold list payments (e-commerce context: buy product)
     function testListPayment() public {
         uint256 depositAmount = 2 ether;
         uint256 paymentAmount = 1 ether;
