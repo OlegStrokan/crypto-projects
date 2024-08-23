@@ -32,6 +32,7 @@ contract Crowdfunding is Ownable {
     error NotCampaignCreator();
     error CampaignNotEnded();
     error GoalNotReached();
+    error GoalReached();
     error NoContributionToCancel();
     error TransferFailed();
     error NoContributionToRefund();
@@ -151,12 +152,14 @@ contract Crowdfunding is Ownable {
     function refund(uint256 _id) external {
         Campaign storage campaign = campaigns[_id];
         if (block.timestamp < campaign.endTime) revert CampaignNotEnded();
-        if (campaign.totalFunds >= campaign.goal) revert GoalNotReached();
+        if (campaign.totalFunds == campaign.goal) revert GoalReached();
         uint256 contribution = contributions[_id][msg.sender];
         if (contribution == 0) revert NoContributionToRefund();
 
         contributions[_id][msg.sender] = 0;
+        campaign.totalFunds -= contribution;
 
+        if (campaign.totalFunds == 0) campaign.isActive = false;
         if (!token.transfer(msg.sender, contribution)) revert TransferFailed();
 
         emit RefundIssued(_id, msg.sender, contribution);
