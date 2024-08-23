@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.26;
 
 import {ERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/ERC20.sol";
 import {Ownable} from "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
-contract CrowdFundEasy {
+contract Crowdfunding is Ownable {
     ERC20 public token;
 
     struct Campaign {
@@ -25,6 +25,7 @@ contract CrowdFundEasy {
     error CampaignAmountZero();
     error CampaignShortDuration();
     error CampaignNotActive();
+    error CreatorCannotContribute();
     error CampaignEnded();
     error InvalidContributionAmount();
     error CampaignNotFound();
@@ -59,7 +60,7 @@ contract CrowdFundEasy {
     /**
      * @param _token list of allowed token addresses
      */
-    constructor(address _token) {
+    constructor(address _token, address _owner) Ownable(_owner) {
         token = ERC20(_token);
     }
     /**
@@ -90,12 +91,11 @@ contract CrowdFundEasy {
      * @param _amount the amount of tokens to contribute
      */
     function contribute(uint256 _id, uint256 _amount) external {
-        if (_amount <= 0) revert InvalidContributionAmount();
-
         Campaign storage campaign = campaigns[_id];
         if (!campaign.isActive) revert CampaignNotActive();
         if (block.timestamp >= campaign.endTime) revert CampaignEnded();
         if (_amount == 0) revert InvalidContributionAmount();
+        if (msg.sender == campaign.creator) revert CreatorCannotContribute();
 
         if (!token.transferFrom(msg.sender, address(this), _amount))
             revert TransferFailed();
@@ -175,26 +175,36 @@ contract CrowdFundEasy {
     }
 
     /**
-     * @notice getCampaign returns details about a campaign
-     * @param _id the id of the campaign
-     * @return remainingTime the time (in seconds) when the campaign ends
-     * @return goal the goal of the campaign (in USD)
-     * @return totalFunds total funds (in USD) raised by the campaign
+     * @notice getCampaign returns details about a specific campaign.
+     * @param _id The ID of the campaign to fetch details for.
+     * @return goal The fundraising goal of the campaign (in USD).
+     * @return totalFunds The total funds raised by the campaign (in USD).
+     * @return endTime The end time of the campaign as a Unix timestamp.
+     * @return creator The address of the campaign creator.
+     * @return isActive A boolean indicating whether the campaign is active.
      */
+
     function getCampaign(
         uint256 _id
     )
         external
         view
-        returns (uint256 remainingTime, uint256 goal, uint256 totalFunds)
+        returns (
+            uint256 goal,
+            uint256 totalFunds,
+            uint256 endTime,
+            address creator,
+            bool isActive
+        )
     {
         Campaign memory campaign = campaigns[_id];
-        if (block.timestamp >= campaign.endTime) {
-            remainingTime = 0;
-        } else {
-            remainingTime = campaign.endTime - block.timestamp;
-        }
-        goal = campaign.goal;
-        totalFunds = campaign.totalFunds;
+
+        return (
+            campaign.goal,
+            campaign.totalFunds,
+            campaign.endTime,
+            campaign.creator,
+            campaign.isActive
+        );
     }
 }
