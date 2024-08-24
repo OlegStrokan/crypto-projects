@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 abstract contract ReentrancyGuard {
-   
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
 
@@ -12,17 +11,13 @@ abstract contract ReentrancyGuard {
         _status = _NOT_ENTERED;
     }
 
-   
     modifier nonReentrant() {
-       
         require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
 
-       
         _status = _ENTERED;
 
         _;
 
-        
         _status = _NOT_ENTERED;
     }
 }
@@ -38,45 +33,43 @@ abstract contract Context {
     }
 }
 
-
 pragma solidity ^0.8.0;
 abstract contract Ownable is Context {
     address private _owner;
 
-    event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipTransferred(
+        address indexed previousOwner,
+        address indexed newOwner
+    );
 
-    
     constructor() {
         _transferOwnership(_msgSender());
     }
 
-    
     modifier onlyOwner() {
         _checkOwner();
         _;
     }
 
-   
     function owner() public view virtual returns (address) {
         return _owner;
     }
 
-    
     function _checkOwner() internal view virtual {
         require(owner() == _msgSender(), "Ownable: caller is not the owner");
     }
 
-   
     function renounceOwnership() public virtual onlyOwner {
         _transferOwnership(address(0));
     }
 
-   
     function transferOwnership(address newOwner) public virtual onlyOwner {
-        require(newOwner != address(0), "Ownable: new owner is the zero address");
+        require(
+            newOwner != address(0),
+            "Ownable: new owner is the zero address"
+        );
         _transferOwnership(newOwner);
     }
-
 
     function _transferOwnership(address newOwner) internal virtual {
         address oldOwner = _owner;
@@ -87,26 +80,30 @@ abstract contract Ownable is Context {
 
 pragma solidity ^0.8.1;
 library Address {
-    
     function isContract(address account) internal view returns (bool) {
-
         return account.code.length > 0;
     }
 
-   
     function sendValue(address payable recipient, uint256 amount) internal {
-        require(address(this).balance >= amount, "Address: insufficient balance");
+        require(
+            address(this).balance >= amount,
+            "Address: insufficient balance"
+        );
 
         (bool success, ) = recipient.call{value: amount}("");
-        require(success, "Address: unable to send value, recipient may have reverted");
+        require(
+            success,
+            "Address: unable to send value, recipient may have reverted"
+        );
     }
 
-   
-    function functionCall(address target, bytes memory data) internal returns (bytes memory) {
+    function functionCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
         return functionCall(target, data, "Address: low-level call failed");
     }
 
-   
     function functionCall(
         address target,
         bytes memory data,
@@ -115,35 +112,50 @@ library Address {
         return functionCallWithValue(target, data, 0, errorMessage);
     }
 
-    
     function functionCallWithValue(
         address target,
         bytes memory data,
         uint256 value
     ) internal returns (bytes memory) {
-        return functionCallWithValue(target, data, value, "Address: low-level call with value failed");
+        return
+            functionCallWithValue(
+                target,
+                data,
+                value,
+                "Address: low-level call with value failed"
+            );
     }
 
-   
     function functionCallWithValue(
         address target,
         bytes memory data,
         uint256 value,
         string memory errorMessage
     ) internal returns (bytes memory) {
-        require(address(this).balance >= value, "Address: insufficient balance for call");
+        require(
+            address(this).balance >= value,
+            "Address: insufficient balance for call"
+        );
         require(isContract(target), "Address: call to non-contract");
 
-        (bool success, bytes memory returndata) = target.call{value: value}(data);
+        (bool success, bytes memory returndata) = target.call{value: value}(
+            data
+        );
         return verifyCallResult(success, returndata, errorMessage);
     }
 
-    
-    function functionStaticCall(address target, bytes memory data) internal view returns (bytes memory) {
-        return functionStaticCall(target, data, "Address: low-level static call failed");
+    function functionStaticCall(
+        address target,
+        bytes memory data
+    ) internal view returns (bytes memory) {
+        return
+            functionStaticCall(
+                target,
+                data,
+                "Address: low-level static call failed"
+            );
     }
 
-   
     function functionStaticCall(
         address target,
         bytes memory data,
@@ -155,12 +167,18 @@ library Address {
         return verifyCallResult(success, returndata, errorMessage);
     }
 
-    
-    function functionDelegateCall(address target, bytes memory data) internal returns (bytes memory) {
-        return functionDelegateCall(target, data, "Address: low-level delegate call failed");
+    function functionDelegateCall(
+        address target,
+        bytes memory data
+    ) internal returns (bytes memory) {
+        return
+            functionDelegateCall(
+                target,
+                data,
+                "Address: low-level delegate call failed"
+            );
     }
 
-   
     function functionDelegateCall(
         address target,
         bytes memory data,
@@ -172,7 +190,6 @@ library Address {
         return verifyCallResult(success, returndata, errorMessage);
     }
 
-    
     function verifyCallResult(
         bool success,
         bytes memory returndata,
@@ -181,9 +198,7 @@ library Address {
         if (success) {
             return returndata;
         } else {
-            
             if (returndata.length > 0) {
-                
                 assembly {
                     let returndata_size := mload(returndata)
                     revert(add(32, returndata), returndata_size)
@@ -195,10 +210,8 @@ library Address {
     }
 }
 
-
 pragma solidity ^0.8.0;
 interface IERC20Permit {
-   
     function permit(
         address owner,
         address spender,
@@ -209,38 +222,34 @@ interface IERC20Permit {
         bytes32 s
     ) external;
 
-    
     function nonces(address owner) external view returns (uint256);
 
-   
     function DOMAIN_SEPARATOR() external view returns (bytes32);
 }
 
-
 pragma solidity ^0.8.0;
 interface IERC20 {
-    
     event Transfer(address indexed from, address indexed to, uint256 value);
 
-   
-    event Approval(address indexed owner, address indexed spender, uint256 value);
+    event Approval(
+        address indexed owner,
+        address indexed spender,
+        uint256 value
+    );
 
-   
     function totalSupply() external view returns (uint256);
 
-    
     function balanceOf(address account) external view returns (uint256);
 
-    
     function transfer(address to, uint256 amount) external returns (bool);
 
-    
-    function allowance(address owner, address spender) external view returns (uint256);
+    function allowance(
+        address owner,
+        address spender
+    ) external view returns (uint256);
 
-    
     function approve(address spender, uint256 amount) external returns (bool);
 
-    
     function transferFrom(
         address from,
         address to,
@@ -248,19 +257,14 @@ interface IERC20 {
     ) external returns (bool);
 }
 
-
 pragma solidity ^0.8.0;
 interface IERC20Metadata is IERC20 {
-   
     function name() external view returns (string memory);
 
-   
     function symbol() external view returns (string memory);
 
-   
     function decimals() external view returns (uint8);
 }
-
 
 pragma solidity ^0.8.0;
 contract ERC20 is Context, IERC20, IERC20Metadata {
@@ -273,57 +277,58 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     string private _name;
     string private _symbol;
 
-   
     constructor(string memory name_, string memory symbol_) {
         _name = name_;
         _symbol = symbol_;
     }
 
-   
     function name() public view virtual override returns (string memory) {
         return _name;
     }
 
-    
     function symbol() public view virtual override returns (string memory) {
         return _symbol;
     }
 
-    
     function decimals() public view virtual override returns (uint8) {
         return 18;
     }
 
-    
     function totalSupply() public view virtual override returns (uint256) {
         return _totalSupply;
     }
 
-    
-    function balanceOf(address account) public view virtual override returns (uint256) {
+    function balanceOf(
+        address account
+    ) public view virtual override returns (uint256) {
         return _balances[account];
     }
 
-   
-    function transfer(address to, uint256 amount) public virtual override returns (bool) {
+    function transfer(
+        address to,
+        uint256 amount
+    ) public virtual override returns (bool) {
         address owner = _msgSender();
         _transfer(owner, to, amount);
         return true;
     }
 
-   
-    function allowance(address owner, address spender) public view virtual override returns (uint256) {
+    function allowance(
+        address owner,
+        address spender
+    ) public view virtual override returns (uint256) {
         return _allowances[owner][spender];
     }
 
-    
-    function approve(address spender, uint256 amount) public virtual override returns (bool) {
+    function approve(
+        address spender,
+        uint256 amount
+    ) public virtual override returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, amount);
         return true;
     }
 
-   
     function transferFrom(
         address from,
         address to,
@@ -335,18 +340,25 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         return true;
     }
 
-   
-    function increaseAllowance(address spender, uint256 addedValue) public virtual returns (bool) {
+    function increaseAllowance(
+        address spender,
+        uint256 addedValue
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         _approve(owner, spender, allowance(owner, spender) + addedValue);
         return true;
     }
 
-   
-    function decreaseAllowance(address spender, uint256 subtractedValue) public virtual returns (bool) {
+    function decreaseAllowance(
+        address spender,
+        uint256 subtractedValue
+    ) public virtual returns (bool) {
         address owner = _msgSender();
         uint256 currentAllowance = allowance(owner, spender);
-        require(currentAllowance >= subtractedValue, "ERC20: decreased allowance below zero");
+        require(
+            currentAllowance >= subtractedValue,
+            "ERC20: decreased allowance below zero"
+        );
         unchecked {
             _approve(owner, spender, currentAllowance - subtractedValue);
         }
@@ -354,7 +366,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         return true;
     }
 
-   
     function _transfer(
         address from,
         address to,
@@ -366,7 +377,10 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _beforeTokenTransfer(from, to, amount);
 
         uint256 fromBalance = _balances[from];
-        require(fromBalance >= amount, "ERC20: transfer amount exceeds balance");
+        require(
+            fromBalance >= amount,
+            "ERC20: transfer amount exceeds balance"
+        );
         unchecked {
             _balances[from] = fromBalance - amount;
         }
@@ -377,7 +391,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _afterTokenTransfer(from, to, amount);
     }
 
-    
     function _mint(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: mint to the zero address");
 
@@ -390,7 +403,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _afterTokenTransfer(address(0), account, amount);
     }
 
-   
     function _burn(address account, uint256 amount) internal virtual {
         require(account != address(0), "ERC20: burn from the zero address");
 
@@ -408,7 +420,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         _afterTokenTransfer(account, address(0), amount);
     }
 
-    
     function _approve(
         address owner,
         address spender,
@@ -421,7 +432,6 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
         emit Approval(owner, spender, amount);
     }
 
-   
     function _spendAllowance(
         address owner,
         address spender,
@@ -429,21 +439,22 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {
         uint256 currentAllowance = allowance(owner, spender);
         if (currentAllowance != type(uint256).max) {
-            require(currentAllowance >= amount, "ERC20: insufficient allowance");
+            require(
+                currentAllowance >= amount,
+                "ERC20: insufficient allowance"
+            );
             unchecked {
                 _approve(owner, spender, currentAllowance - amount);
             }
         }
     }
 
-   
     function _beforeTokenTransfer(
         address from,
         address to,
         uint256 amount
     ) internal virtual {}
 
-   
     function _afterTokenTransfer(
         address from,
         address to,
@@ -451,17 +462,15 @@ contract ERC20 is Context, IERC20, IERC20Metadata {
     ) internal virtual {}
 }
 
-
 pragma solidity ^0.8.0;
 library SafeERC20 {
     using Address for address;
 
-    function safeTransfer(
-        IERC20 token,
-        address to,
-        uint256 value
-    ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transfer.selector, to, value));
+    function safeTransfer(IERC20 token, address to, uint256 value) internal {
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.transfer.selector, to, value)
+        );
     }
 
     function safeTransferFrom(
@@ -470,21 +479,25 @@ library SafeERC20 {
         address to,
         uint256 value
     ) internal {
-        _callOptionalReturn(token, abi.encodeWithSelector(token.transferFrom.selector, from, to, value));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.transferFrom.selector, from, to, value)
+        );
     }
 
-   
     function safeApprove(
         IERC20 token,
         address spender,
         uint256 value
     ) internal {
-       
         require(
             (value == 0) || (token.allowance(address(this), spender) == 0),
             "SafeERC20: approve from non-zero to non-zero allowance"
         );
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, value));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(token.approve.selector, spender, value)
+        );
     }
 
     function safeIncreaseAllowance(
@@ -493,7 +506,14 @@ library SafeERC20 {
         uint256 value
     ) internal {
         uint256 newAllowance = token.allowance(address(this), spender) + value;
-        _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+        _callOptionalReturn(
+            token,
+            abi.encodeWithSelector(
+                token.approve.selector,
+                spender,
+                newAllowance
+            )
+        );
     }
 
     function safeDecreaseAllowance(
@@ -503,9 +523,19 @@ library SafeERC20 {
     ) internal {
         unchecked {
             uint256 oldAllowance = token.allowance(address(this), spender);
-            require(oldAllowance >= value, "SafeERC20: decreased allowance below zero");
+            require(
+                oldAllowance >= value,
+                "SafeERC20: decreased allowance below zero"
+            );
             uint256 newAllowance = oldAllowance - value;
-            _callOptionalReturn(token, abi.encodeWithSelector(token.approve.selector, spender, newAllowance));
+            _callOptionalReturn(
+                token,
+                abi.encodeWithSelector(
+                    token.approve.selector,
+                    spender,
+                    newAllowance
+                )
+            );
         }
     }
 
@@ -522,30 +552,34 @@ library SafeERC20 {
         uint256 nonceBefore = token.nonces(owner);
         token.permit(owner, spender, value, deadline, v, r, s);
         uint256 nonceAfter = token.nonces(owner);
-        require(nonceAfter == nonceBefore + 1, "SafeERC20: permit did not succeed");
+        require(
+            nonceAfter == nonceBefore + 1,
+            "SafeERC20: permit did not succeed"
+        );
     }
 
-    
     function _callOptionalReturn(IERC20 token, bytes memory data) private {
-      
-
-        bytes memory returndata = address(token).functionCall(data, "SafeERC20: low-level call failed");
+        bytes memory returndata = address(token).functionCall(
+            data,
+            "SafeERC20: low-level call failed"
+        );
         if (returndata.length > 0) {
-           
-            require(abi.decode(returndata, (bool)), "SafeERC20: ERC20 operation did not succeed");
+            require(
+                abi.decode(returndata, (bool)),
+                "SafeERC20: ERC20 operation did not succeed"
+            );
         }
     }
 }
 
-pragma solidity >=0.7.0 < 0.9.0;
+pragma solidity >=0.7.0 <0.9.0;
 
 contract StackingDapp is Ownable, ReentrancyGuard {
-
     using SafeERC20 for IERC20;
 
     struct UserInfo {
         uint256 amount;
-        uint lastRewardAt;
+        uint256 lastRewardAt;
         uint256 lockUntil;
     }
 
@@ -574,17 +608,24 @@ contract StackingDapp is Ownable, ReentrancyGuard {
 
     Notification[] public notifications;
 
-    function addPool(IERC20 _depositToken, IERC20 _rewardToken, uint256 _apy, uint _lockDays) public onlyOwner {  
-        poolInfo.push(PoolInfo({
-            depositToken: _depositToken,
-            rewardToken: _rewardToken,
-            depositedAmount: 0,
-            apy: _apy,
-            lockDays: _lockDays
-        }));
+    function addPool(
+        IERC20 _depositToken,
+        IERC20 _rewardToken,
+        uint256 _apy,
+        uint _lockDays
+    ) public onlyOwner {
+        poolInfo.push(
+            PoolInfo({
+                depositToken: _depositToken,
+                rewardToken: _rewardToken,
+                depositedAmount: 0,
+                apy: _apy,
+                lockDays: _lockDays
+            })
+        );
 
         poolCount++;
-     }
+    }
 
     function deposit(uint _pid, uint _amount) public nonReentrant {
         require(_amount > 0, "Amount should be greater then 0!");
@@ -611,11 +652,9 @@ contract StackingDapp is Ownable, ReentrancyGuard {
         depositedTokens[address(pool.depositToken)] += _amount;
 
         _createNotification(_pid, _amount, msg.sender, "Deposit");
-    
     }
 
     function withdraw(uint _pid, uint _amount) public nonReentrant {
-
         PoolInfo storage pool = poolInfo[_pid];
         UserInfo storage user = userInfo[_pid][msg.sender];
 
@@ -640,23 +679,26 @@ contract StackingDapp is Ownable, ReentrancyGuard {
         user.lastRewardAt = block.timestamp;
 
         _createNotification(_pid, _amount, msg.sender, "Widthdraw");
-
     }
 
-    function _calcPendingReward(UserInfo storage user, uint _pid) internal view returns(uint) {
-            PoolInfo storage pool = poolInfo[_pid];
-            uint daysPassed = (block.timestamp - user.lastRewardAt) / 60;
+    function _calcPendingReward(
+        UserInfo storage user,
+        uint _pid
+    ) internal view returns (uint) {
+        PoolInfo storage pool = poolInfo[_pid];
+        uint daysPassed = (block.timestamp - user.lastRewardAt) / 60;
 
+        if (daysPassed > pool.lockDays) {
+            daysPassed = pool.lockDays;
+        }
 
-            if (daysPassed > pool.lockDays) {
-                daysPassed = pool.lockDays;
-            }
+        return ((user.amount * daysPassed) / 365 / 10) * pool.apy;
+    }
 
-            return user.amount * daysPassed / 365 / 10 *pool.apy;
-     }
-    
-
-    function pendingReward(uint _pid, address _user) public view returns(uint) {
+    function pendingReward(
+        uint _pid,
+        address _user
+    ) public view returns (uint) {
         UserInfo storage user = userInfo[_pid][_user];
 
         return _calcPendingReward(user, _pid);
@@ -664,21 +706,23 @@ contract StackingDapp is Ownable, ReentrancyGuard {
 
     function sweep(address token, uint256 amount) external onlyOwner {
         uint256 token_balance = IERC20(token).balanceOf(address(this));
-        require (amount <= token_balance, "Amount exceeds balance");
-        require (token_balance - amount >= depositedTokens[token], "Can't widthraw deposited tokens");
+        require(amount <= token_balance, "Amount exceeds balance");
+        require(
+            token_balance - amount >= depositedTokens[token],
+            "Can't widthraw deposited tokens"
+        );
 
         IERC20(token).safeTransfer(msg.sender, amount);
-        
     }
 
     function modityPool(uint _pid, uint _apy) public onlyOwner {
         PoolInfo storage pool = poolInfo[_pid];
-         pool.apy = _apy;
+        pool.apy = _apy;
     }
-    
+
     function claimReward(uint _pid) public nonReentrant {
-         PoolInfo storage pool = poolInfo[_pid];
-         UserInfo storage user = userInfo[_pid][msg.sender];
+        PoolInfo storage pool = poolInfo[_pid];
+        UserInfo storage user = userInfo[_pid][msg.sender];
 
         require(user.lockUntil <= block.timestamp, "Lock is active");
 
@@ -692,18 +736,24 @@ contract StackingDapp is Ownable, ReentrancyGuard {
         _createNotification(_pid, pending, msg.sender, "Claim");
     }
 
-    function _createNotification(uint _id, uint _amount, address _user, string memory _typeOf) internal {
-        notifications.push(Notification({
-            poolID: _id,
-            amount: _amount,
-            user: _user,
-            typeOf: _typeOf,
-            timestamp: block.timestamp
-        }));
+    function _createNotification(
+        uint _id,
+        uint _amount,
+        address _user,
+        string memory _typeOf
+    ) internal {
+        notifications.push(
+            Notification({
+                poolID: _id,
+                amount: _amount,
+                user: _user,
+                typeOf: _typeOf,
+                timestamp: block.timestamp
+            })
+        );
     }
 
-    function getNotifications() public view returns(Notification[] memory) {
-
+    function getNotifications() public view returns (Notification[] memory) {
         return notifications;
     }
 }
