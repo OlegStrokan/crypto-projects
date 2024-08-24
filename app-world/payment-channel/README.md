@@ -1,19 +1,12 @@
-## Foundry
+## Payment Channel
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### This contract is simulation of defi market
 
-Foundry consists of:
+#### Info:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Alice, a wholesale seller of Holi-themed items, has been explaining the benefits of a Simple Payment Channel to local shopkeepers in HoliVille. These shopkeepers visit Alice's warehouse to purchase Holi-themed costumes, masks, and other accessories for their shops. The process of purchasing these items can be cumbersome and time-consuming, especially when dealing with multiple shopkeepers.
 
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
+Alice explained how a customer, John, who owns a local shop in HoliVille, would deposit 100 wei into the smart contract. John lists payments for a variety of Holi-themed items, such as costumes (10 wei each) and masks (20 wei each). When John closes the channel, the total amount of 30 wei is transferred to Alice for the items purchased, and the remaining 70 wei is transferred back to John. This process, Alice explained, would make transactions faster, more convenient, and more cost-effective for both Alice and the local shopkeepers in HoliVille.
 
 ### Build
 

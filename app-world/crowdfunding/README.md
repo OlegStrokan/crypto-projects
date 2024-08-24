@@ -1,19 +1,13 @@
-## Foundry
+## CrowdFunding
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### This contract is simulation of real crowdfunding
 
-Foundry consists of:
+#### Specs:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
-
-## Documentation
-
-https://book.getfoundry.sh/
-
-## Usage
+- Anyone can create a new campaign by specifying the goal amount (in USD), and the duration.
+- Any user, except for the creator of the campaign, can donate to any campaign using the token.
+- Users can cancel their donations anytime for a particular campaign before the deadline has passed.
+- If after the deadline has passed, the goal has not been reached, the campaign is said to be unsuccessful and donors can get their contributions back.
 
 ### Build
 
