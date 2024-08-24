@@ -9,14 +9,16 @@ import "./mocks/MockERC20Token.sol";
 contract CrowdfundingTest is Test {
     MockERC20 public token;
     Crowdfunding public crowdfunding;
-    address payable public owner;
-    address payable public firstContributor;
-    address payable public secondContributor;
+    address public owner;
+    address public firstContributor;
+    address public secondContributor;
+    address public deadAddress;
 
     function setUp() public {
-        owner = payable(address(0x1));
-        firstContributor = payable(address(0x2));
-        secondContributor = payable(address(0x3));
+        owner = vm.addr(1);
+        firstContributor = vm.addr(2);
+        secondContributor = vm.addr(3);
+        deadAddress = vm.addr(4);
         vm.startPrank(owner);
 
         token = new MockERC20("Test Token", "TST");
@@ -31,6 +33,7 @@ contract CrowdfundingTest is Test {
 
     //-------------------------campaign create tests------------------------//
 
+    /// @notice Tests successful campaign creation.
     function testCreateCampaign() public {
         _createCampaignByOwner(3 ether, 1 days);
 
@@ -49,13 +52,15 @@ contract CrowdfundingTest is Test {
         assertEq(creator, owner);
     }
 
-    function testCreateCompaingFailsWhenAmountZero() public {
+    /// @notice Tests that creating a campaign with zero amount fails.
+    function testCreateCampaignFailsWhenAmountZero() public {
         vm.prank(firstContributor);
         vm.expectRevert(Crowdfunding.CampaignAmountZero.selector);
         crowdfunding.createCampaign(0 ether, 1 days);
     }
 
-    function testCreateCompaignFailsWhenShortDuration() public {
+    /// @notice Tests that creating a campaign with a duration of zero days fails.
+    function testCreateCampaignFailsWhenShortDuration() public {
         vm.prank(firstContributor);
         vm.expectRevert(Crowdfunding.CampaignShortDuration.selector);
         crowdfunding.createCampaign(1 ether, 0 days);
@@ -63,6 +68,7 @@ contract CrowdfundingTest is Test {
 
     //---------------------------contribute tests--------------------------//
 
+    /// @notice Tests successful contribution to a campaign.
     function testContribute() public {
         _createCampaignByOwner(2 ether, 1 days);
 
@@ -73,6 +79,7 @@ contract CrowdfundingTest is Test {
         assertEq(totalFunds, 2 ether);
     }
 
+    /// @notice Tests that contributing to a non-active campaign fails.
     function testContributeFailsWhenCampaignNotActive() public {
         _contributeOrFail(
             firstContributor,
@@ -82,7 +89,8 @@ contract CrowdfundingTest is Test {
         );
     }
 
-    function testContributeFailsWhenCompaingEnded() public {
+    /// @notice Tests that contributing to an ended campaign fails.
+    function testContributeFailsWhenCampaignEnded() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         vm.warp(block.timestamp + 2 days);
@@ -94,6 +102,7 @@ contract CrowdfundingTest is Test {
         );
     }
 
+    /// @notice Tests that contributing with an invalid amount (zero) fails.
     function testContributeFailsWhenInvalidContributionAmount() public {
         _createCampaignByOwner(2 ether, 1 days);
 
@@ -105,7 +114,8 @@ contract CrowdfundingTest is Test {
         );
     }
 
-    function testContributeFailsWhenCreatorContibuted() public {
+    /// @notice Tests that the campaign creator cannot contribute to their own campaign.
+    function testContributeFailsWhenCreatorContributed() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         _contributeOrFail(
@@ -116,6 +126,7 @@ contract CrowdfundingTest is Test {
         );
     }
 
+    /// @notice Tests that a contribution fails if token transfer fails.
     function testContributeFailsWhenTransferFailed() public {
         _createCampaignByOwner(2 ether, 1 days);
 
@@ -128,6 +139,7 @@ contract CrowdfundingTest is Test {
 
     //---------------------------cancel contribution tests--------------------------//
 
+    /// @notice Tests successful cancellation of a contribution.
     function testCancelContribution() public {
         _createCampaignByOwner(2 ether, 1 days);
 
@@ -141,13 +153,15 @@ contract CrowdfundingTest is Test {
         // assertEq(address(firstContributor).balance, 1 ether);
     }
 
+    /// @notice Tests that canceling a contribution fails when the campaign is not active.
     function testCancelContributionFailsWhenNotActive() public {
         vm.prank(firstContributor);
         vm.expectRevert(Crowdfunding.CampaignNotActive.selector);
         crowdfunding.cancelContribution(0);
     }
 
-    function testCancelContributionFailsWhenWhenEnded() public {
+    /// @notice Tests that canceling a contribution fails when the campaign has ended.
+    function testCancelContributionFailsWhenEnded() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
@@ -159,7 +173,8 @@ contract CrowdfundingTest is Test {
         crowdfunding.cancelContribution(0);
     }
 
-    function testCancelContributionFailsWhenNoContibution() public {
+    /// @notice Tests that canceling a contribution fails when there was no contribution.
+    function testCancelContributionFailsWhenNoContribution() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         vm.prank(owner);
@@ -167,20 +182,23 @@ contract CrowdfundingTest is Test {
         crowdfunding.cancelContribution(0);
     }
 
+    /// @notice Tests that canceling a contribution fails if token transfer fails.
     function testCancelContributionFailsWhenTransferFailed() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
 
+        vm.prank(address(crowdfunding));
+        token.transfer(deadAddress, 1 ether);
+
         vm.prank(firstContributor);
-        // TODO debug. we need to set something to fail cancelContibution transaction
-        // but contribute should works
-        // vm.expectRevert(Crowdfunding.TransferFailed.selector);
+        vm.expectRevert(Crowdfunding.TransferFailed.selector);
         crowdfunding.cancelContribution(0);
     }
 
-    //---------------------------cancel contribution tests--------------------------//
+    //---------------------------withdraw funds tests--------------------------//
 
+    /// @notice Tests successful withdrawal of funds by the campaign creator.
     function testWithdrawFunds() public {
         _createCampaignByOwner(2 ether, 1 days);
 
@@ -200,7 +218,8 @@ contract CrowdfundingTest is Test {
         assertEq(token.balanceOf(owner), goal);
     }
 
-    function testWidthdrawFundsFailsWhenNotCampaignCreator() public {
+    /// @notice Tests that a non-campaign creator cannot withdraw funds.
+    function testWithdrawFundsFailsWhenNotCampaignCreator() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         vm.warp(block.timestamp + 1 days);
@@ -210,7 +229,8 @@ contract CrowdfundingTest is Test {
         crowdfunding.withdrawFunds(0);
     }
 
-    function testeWithdrawFundsFailsWhenCampaingNotEnded() public {
+    /// @notice Tests that withdrawing funds fails if the campaign has not ended.
+    function testWithdrawFundsFailsWhenCampaignNotEnded() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         vm.prank(owner);
@@ -218,7 +238,8 @@ contract CrowdfundingTest is Test {
         crowdfunding.withdrawFunds(0);
     }
 
-    function testeWithdrawFundsFailsWhenGoalNotReached() public {
+    /// @notice Tests that withdrawing funds fails if the campaign goal was not reached.
+    function testWithdrawFundsFailsWhenGoalNotReached() public {
         _createCampaignByOwner(2 ether, 1 days);
 
         vm.warp(block.timestamp + 1 days);
@@ -228,17 +249,32 @@ contract CrowdfundingTest is Test {
         crowdfunding.withdrawFunds(0);
     }
 
-    function testeWithdrawFundsFailsWhenTransferFailed() public {
+    /// @notice Tests that withdrawing funds fails if token transfer fails.
+    function testWithdrawFundsFailsWhenTransferFailed() public {
         _createCampaignByOwner(2 ether, 1 days);
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
+        _contributeOrFail(secondContributor, 0, 1 ether, bytes4(0));
 
         vm.warp(block.timestamp + 1 days);
 
-        // TODO like  testCancelContributionFailsWhenTransferFailed
+        vm.prank(address(crowdfunding));
+        token.transfer(deadAddress, 1 ether);
+
+        vm.prank(owner);
+        vm.expectRevert(Crowdfunding.TransferFailed.selector);
+        crowdfunding.withdrawFunds(0);
+
+        (, uint256 totalFunds, , , bool isActive) = crowdfunding.getCampaign(0);
+
+        assertEq(2 ether, totalFunds);
+        assertEq(isActive, true);
+
+        assertEq(token.balanceOf(owner), 0 ether);
     }
 
     //----------------------------refund tests---------------------------//
 
+    /// @notice Tests successful refund of contributions.
     function testRefund() public {
         _createCampaignByOwner(2 ether, 1 days);
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
@@ -253,6 +289,7 @@ contract CrowdfundingTest is Test {
 
         assertEq(token.balanceOf(firstContributor), 1 ether);
         assertEq(totalFunds, 0.8 ether);
+        assertEq(isActive, true);
 
         vm.prank(secondContributor);
         crowdfunding.refund(0);
@@ -270,7 +307,8 @@ contract CrowdfundingTest is Test {
         assertEq(isActiveAfterSecondRefund, false);
     }
 
-    function testRefundsFailsWhenCampaingNotEnded() public {
+    /// @notice Tests that refunding fails when the campaign has not ended.
+    function testRefundFailsWhenCampaignNotEnded() public {
         _createCampaignByOwner(2 ether, 1 days);
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
 
@@ -279,6 +317,7 @@ contract CrowdfundingTest is Test {
         crowdfunding.refund(0);
     }
 
+    /// @notice Tests that refunding fails when the campaign goal was reached.
     function testRefundFailsWhenGoalReached() public {
         _createCampaignByOwner(2 ether, 1 days);
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
@@ -291,7 +330,8 @@ contract CrowdfundingTest is Test {
         crowdfunding.refund(0);
     }
 
-    function testRefundFailsWhenNoContributionRefund() public {
+    /// @notice Tests that refunding fails when there are no contributions to refund.
+    function testRefundFailsWhenNoContributionToRefund() public {
         _createCampaignByOwner(2 ether, 1 days);
         vm.warp(block.timestamp + 1 days);
 
@@ -300,25 +340,31 @@ contract CrowdfundingTest is Test {
         crowdfunding.refund(0);
     }
 
-    function testeWithdrawFundsFailsTransferFailed() public {
+    /// @notice Tests that refunding funds fails if token transfer fails.
+    function testRefundFundsFailsTransferFailed() public {
         _createCampaignByOwner(2 ether, 1 days);
         _contributeOrFail(firstContributor, 0, 1 ether, bytes4(0));
-        _contributeOrFail(secondContributor, 0, 1 ether, bytes4(0));
+        _contributeOrFail(secondContributor, 0, 0.5 ether, bytes4(0));
 
         vm.warp(block.timestamp + 1 days);
 
-        // TODO like  testCancelContributionFailsWhenTransferFailed
+        vm.prank(address(crowdfunding));
+        token.transfer(deadAddress, 1.5 ether);
+
+        vm.prank(firstContributor);
+        vm.expectRevert(Crowdfunding.TransferFailed.selector);
+        crowdfunding.refund(0);
     }
 
     //--------------------------------helpers---------------------------//
 
     function _contributeOrFail(
-        address contributer,
+        address contributor,
         uint256 campaignId,
         uint256 amount,
         bytes4 errMessage
     ) private {
-        vm.startPrank(contributer);
+        vm.startPrank(contributor);
         token.approve(address(crowdfunding), amount);
         if (errMessage != bytes4(0)) {
             vm.expectRevert(errMessage);
@@ -330,5 +376,56 @@ contract CrowdfundingTest is Test {
     function _createCampaignByOwner(uint256 amount, uint256 duration) private {
         vm.prank(owner);
         crowdfunding.createCampaign(amount, duration);
+    }
+
+    //---------------------------getContribution and getCampaign additional tests--------------------------//
+
+    /// @notice Tests that `getContribution` returns zero if there was no contribution.
+    function testGetContributionFailsWhenNoContribution() public {
+        _createCampaignByOwner(2 ether, 1 days);
+
+        uint256 contribution = crowdfunding.getContribution(
+            0,
+            firstContributor
+        );
+        assertEq(contribution, 0);
+    }
+
+    /// @notice Tests the `getCampaign` function with an invalid campaign ID.
+    function testGetCampaignFailsWhenInvalidCampaignId() public view {
+        // Simulate a scenario where the campaign ID is invalid (e.g., no such campaign)
+        // You can only test this if your contract has some way of detecting invalid IDs
+        // Currently, if there's no such campaign, getCampaign will return default values
+        (
+            uint256 goal,
+            uint256 totalFunds,
+            uint256 endTime,
+            address creator,
+            bool isActive
+        ) = crowdfunding.getCampaign(999);
+        assertEq(goal, 0);
+        assertEq(totalFunds, 0);
+        assertEq(endTime, 0);
+        assertEq(creator, address(0));
+        assertEq(isActive, false);
+    }
+
+    /// @notice Tests that `getCampaign` returns default values when the campaign does not exist.
+    function testGetCampaignReturnsDefaultValuesWhenCampaignDoesNotExist()
+        public
+        view
+    {
+        (
+            uint256 goal,
+            uint256 totalFunds,
+            uint256 endTime,
+            address creator,
+            bool isActive
+        ) = crowdfunding.getCampaign(999);
+        assertEq(goal, 0);
+        assertEq(totalFunds, 0);
+        assertEq(endTime, 0);
+        assertEq(creator, address(0));
+        assertEq(isActive, false);
     }
 }

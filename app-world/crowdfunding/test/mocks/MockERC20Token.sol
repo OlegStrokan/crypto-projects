@@ -13,6 +13,17 @@ contract MockERC20 is ERC20 {
     }
 
     /// @dev overriding necessary only for testing
+    function transfer(
+        address to,
+        uint256 amount
+    ) public override returns (bool) {
+        if (balanceOf(msg.sender) < amount) {
+            revert TransferFailed(); // Custom error for failed transfer
+        }
+        return super.transfer(to, amount);
+    }
+
+    /// @dev overriding necessary only for testing
     function transferFrom(
         address from,
         address to,
