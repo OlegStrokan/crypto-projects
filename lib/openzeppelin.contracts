@@ -1,0 +1,7 @@
+diff --git a/lib/openzeppelin-contracts b/lib/openzeppelin-contracts
+deleted file mode 160000
+index dbb6104..0000000
+--- a/lib/openzeppelin-contracts
++++ /dev/null
+@@ -1 +0,0 @@
+-Subproject commit dbb6104ce834628e473d2173bbc9d47f81a9eec3

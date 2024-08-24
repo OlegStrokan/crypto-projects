@@ -2,5 +2,9 @@
 src = "src"
 out = "out"
 libs = ["lib"]
+[dependencies]
+openzeppelin-contracts = { version = "5.0.2", git = "https://github.com/OpenZeppelin/openzeppelin-contracts.git" }
+
+
 
 # See more config options https://github.com/foundry-rs/foundry/blob/master/crates/config/README.md#all-options
