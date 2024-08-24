@@ -20,7 +20,7 @@ contract Crowdfunding is Ownable {
 
     uint256 public nextCampaignId;
 
-    //---------------------------custom erros--------------------------//
+    //---------------------------custom errors--------------------------//
 
     error CampaignAmountZero();
     error CampaignShortDuration();
@@ -59,15 +59,18 @@ contract Crowdfunding is Ownable {
     event RefundIssued(uint256 campaignId, address donor, uint256 amount);
 
     /**
-     * @param _token list of allowed token addresses
+     * @notice Constructor initializes the Crowdfunding contract with a token and owner.
+     * @param _token The address of the ERC20 token used for contributions.
+     * @param _owner The address of the contract owner.
      */
     constructor(address _token, address _owner) Ownable(_owner) {
         token = ERC20(_token);
     }
+
     /**
-     * @notice createCampaign allows anyone to create a campaign
-     * @param _goal amount of funds to be raised in USD
-     * @param _duration the duration of the campaign in seconds
+     * @notice Allows anyone to create a new crowdfunding campaign.
+     * @param _goal The amount of funds to be raised (in tokens).
+     * @param _duration The duration of the campaign in seconds.
      */
     function createCampaign(uint256 _goal, uint256 _duration) external {
         if (_goal <= 0) revert CampaignAmountZero();
@@ -87,9 +90,9 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @dev contribute allows anyone to contribute to a campaign
-     * @param _id the id of the campaign
-     * @param _amount the amount of tokens to contribute
+     * @notice Allows anyone to contribute to an active campaign.
+     * @param _id The ID of the campaign.
+     * @param _amount The amount of tokens to contribute.
      */
     function contribute(uint256 _id, uint256 _amount) external {
         Campaign storage campaign = campaigns[_id];
@@ -107,8 +110,8 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @dev cancelContribution allows anyone to cancel their contribution
-     * @param _id the id of the campaign
+     * @notice Allows contributors to cancel their contribution before the campaign ends.
+     * @param _id The ID of the campaign.
      */
     function cancelContribution(uint256 _id) external {
         Campaign storage campaign = campaigns[_id];
@@ -126,10 +129,9 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @notice withdrawFunds allows the creator of the campaign to withdraw the funds
-     * @param _id the id of the campaign
+     * @notice Allows the campaign creator to withdraw funds if the goal is reached and the campaign has ended.
+     * @param _id The ID of the campaign.
      */
-
     function withdrawFunds(uint256 _id) external {
         Campaign storage campaign = campaigns[_id];
         if (campaign.creator != msg.sender) revert NotCampaignCreator();
@@ -146,8 +148,8 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @notice refund allows the contributors to get a refund if the campaign failed
-     * @param _id the id of the campaign
+     * @notice Allows contributors to receive a refund if the campaign fails to reach its goal.
+     * @param _id The ID of the campaign.
      */
     function refund(uint256 _id) external {
         Campaign storage campaign = campaigns[_id];
@@ -166,9 +168,10 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @notice getContribution returns the contribution of a contributor in USD
-     * @param _id the id of the campaign
-     * @param _contributor the address of the contributor
+     * @notice Returns the contribution amount of a specific contributor for a campaign.
+     * @param _id The ID of the campaign.
+     * @param _contributor The address of the contributor.
+     * @return The contribution amount in tokens.
      */
     function getContribution(
         uint256 _id,
@@ -178,15 +181,14 @@ contract Crowdfunding is Ownable {
     }
 
     /**
-     * @notice getCampaign returns details about a specific campaign.
-     * @param _id The ID of the campaign to fetch details for.
-     * @return goal The fundraising goal of the campaign (in USD).
-     * @return totalFunds The total funds raised by the campaign (in USD).
+     * @notice Returns the details of a specific campaign.
+     * @param _id The ID of the campaign.
+     * @return goal The fundraising goal of the campaign (in tokens).
+     * @return totalFunds The total funds raised by the campaign (in tokens).
      * @return endTime The end time of the campaign as a Unix timestamp.
      * @return creator The address of the campaign creator.
      * @return isActive A boolean indicating whether the campaign is active.
      */
-
     function getCampaign(
         uint256 _id
     )
