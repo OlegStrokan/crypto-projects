@@ -1,13 +1,17 @@
-## Foundry
+## Stacking
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+### This contract is simulation of defi stacking mechanism
 
-Foundry consists of:
+#### Info:
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+Staking contracts allows users to stake tokens for a specific duration and earn rewards based on their staking period.
+
+The calculation of the rewards is done in the following manner:
+
+- If less than 1 day has been passed, the user earns no rewards.
+- If more than 1 day has been passed, the user earns 1% on their staked token amount.
+- If more than a week has passed, the user earns 10%.
+- If more than a month (30 days) has been passed, the user earns 50%.
 
 ## Documentation
 
