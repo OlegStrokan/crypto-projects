@@ -8,8 +8,8 @@
 
 #### [NFT market](https://github.com/OlegStrokan/piedpiper/tree/master/ntf-market) - Basic implementation of nft market
 
-#### [Payment Channel](https://github.com/OlegStrokan/piedpiper/tree/master/app-world/payment-channel) - Baic implementation of defi market
+#### [Payment Channel](https://github.com/OlegStrokan/piedpiper/tree/master/payment-channel) - Baic implementation of defi market
 
-#### [Staking](https://github.com/OlegStrokan/piedpiper/tree/master/app-world/stacking) - My own implementation of stacking mechanism
+#### [Staking](https://github.com/OlegStrokan/piedpiper/tree/master/stacking) - My own implementation of stacking mechanism
 
 #### [Upgradeable Contracts](https://github.com/OlegStrokan/piedpiper/tree/master/dapp-stacking) - Open Zeppelin Upgradeable Contracts implementation (Transparent Proxy Pattern)
