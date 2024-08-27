@@ -16,6 +16,7 @@ contract Staking is Ownable {
     ERC20 public token;
 
     error StakingAmountZero();
+    error DepositAmountZero();
     error InsufficientTokenBalance();
     error InsufficientOwnerBalance();
     error InsufficientTokenAllowance();
@@ -32,9 +33,17 @@ contract Staking is Ownable {
     event ClaimInterest(address indexed contributor, uint256 rewards);
     event Redeem(address indexed contributor, uint256 amount);
     event Sweep(uint256 amount);
+    event Deposit(address indexed sender, uint256 amount);
 
     constructor(address _token) Ownable(msg.sender) {
         token = ERC20(_token);
+    }
+
+    // Allows owner to initialize the contract with tokens
+    function initializeTokenBalance(uint256 amount) external onlyOwner {
+        if (amount == 0) revert RedeemAmountZero();
+        if (!token.transferFrom(msg.sender, address(this), amount))
+            revert TransferFailed();
     }
 
     // Allows users to stake tokens
@@ -172,7 +181,16 @@ contract Staking is Ownable {
     }
 
     function getStakeHolder(uint256 index) external view returns (address) {
-        if (index > stakeHolders.length) revert IndexOutOfBounds();
+        if (index >= stakeHolders.length) revert IndexOutOfBounds();
         return stakeHolders[index];
+    }
+
+    // This function will be called if someone sends Ether directly to the contract address
+    receive() external payable {
+        if (msg.value == 0) revert DepositAmountZero();
+
+        contractBalance += msg.value;
+
+        emit Deposit(msg.sender, msg.value);
     }
 }

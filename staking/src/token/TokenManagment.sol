@@ -9,7 +9,7 @@ interface ERC20 {
     function balanceOf(address account) external view returns (uint256);
 }
 
-contract TokenManager {
+contract TokenManagment {
     address public owner;
     address public tokenAddress;
     uint256 public tokenSalePrice;
