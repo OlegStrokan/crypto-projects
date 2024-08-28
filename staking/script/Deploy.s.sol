@@ -12,13 +12,16 @@ contract Deploy is Script {
 
         vm.startBroadcast(deployerPrivateKey);
 
-        // Deploy ERC20Token with initial supply of 1 million tokens
+        // Deploy METHToken with initial supply of 1 million tokens
         METHToken token = new METHToken(1_000_000);
 
-        // Deploy TokenICO with token address and sale price (1 token = 0.001 ETH)
-        TokenManagment ico = new TokenManagment(address(token), 0.001 ether);
+        // Define the sale price for tokens (e.g., 0.001 ETH per token)
+        uint256 tokenSalePrice = 0.001 ether;
 
-        // Transfer 500,000 tokens to the TokenICO contract
+        // Deploy TokenManagment with token address and sale price
+        TokenManagment ico = new TokenManagment(address(token), tokenSalePrice);
+
+        // Transfer 500,000 tokens to the TokenManagment contract
         token.transfer(address(ico), 500_000 * 10 ** token.decimals());
 
         // Deploy Staking contract with the token address
