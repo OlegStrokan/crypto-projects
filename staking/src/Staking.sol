@@ -189,8 +189,6 @@ contract Staking is Ownable {
     receive() external payable {
         if (msg.value == 0) revert DepositAmountZero();
 
-        contractBalance += msg.value;
-
         emit Deposit(msg.sender, msg.value);
     }
 }
