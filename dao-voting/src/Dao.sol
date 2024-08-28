@@ -60,6 +60,12 @@ contract DAO {
         _;
     }
 
+    /**
+     * @notice Initializes the DAO with contribution end time, voting time, and quorum percentage.
+     * @param _contributionTimeEnd The duration (in seconds) for which contributions are allowed.
+     * @param _voteTime The duration (in seconds) for which voting on proposals is allowed.
+     * @param _quorum The percentage of DAO balance required for a proposal to pass.
+     */
     function initializeDAO(
         uint256 _contributionTimeEnd,
         uint256 _voteTime,
@@ -72,6 +78,9 @@ contract DAO {
         quorum = _quorum;
     }
 
+    /**
+     * @notice Allows users to contribute Ether to the DAO. Contributions are only allowed before the contribution period ends.
+     */
     function contribution() public payable {
         if (block.timestamp > contributionTimeEnd)
             revert ContributionPeriodEnded();
@@ -87,6 +96,10 @@ contract DAO {
         emit Contribution(msg.sender, msg.value);
     }
 
+    /**
+     * @notice Allows users to redeem a specified amount of their shares in exchange for Ether.
+     * @param amount The amount of shares to redeem.
+     */
     function redeemShare(uint256 amount) public {
         if (balance[msg.sender] < amount || address(this).balance < amount)
             revert InsufficientBalanceForRedemption();
@@ -99,6 +112,11 @@ contract DAO {
         emit RedeemShare(msg.sender, amount);
     }
 
+    /**
+     * @notice Allows users to transfer their shares to another address.
+     * @param amount The amount of shares to transfer.
+     * @param to The address to transfer the shares to.
+     */
     function transferShare(uint256 amount, address to) public {
         if (balance[msg.sender] < amount)
             revert InsufficientBalanceForTransfer();
@@ -115,6 +133,12 @@ contract DAO {
         emit TransferShare(msg.sender, to, amount);
     }
 
+    /**
+     * @notice Allows the owner to create a new proposal.
+     * @param description A description of the proposal.
+     * @param amount The amount of Ether to be allocated for the proposal.
+     * @param recipient The address to receive the allocated Ether if the proposal is approved.
+     */
     function createProposal(
         string calldata description,
         uint256 amount,
@@ -130,6 +154,10 @@ contract DAO {
         emit CreateProposal(description, amount, recipient);
     }
 
+    /**
+     * @notice Allows investors to vote on proposals. Votes are weighted by the investor's share balance.
+     * @param proposalId The ID of the proposal to vote on.
+     */
     function voteProposal(uint256 proposalId) public {
         if (block.timestamp > createTimes[proposalId] + voteTime)
             revert VotingPeriodEnded();
@@ -142,6 +170,10 @@ contract DAO {
         emit VoteProposal(msg.sender, proposalId, balance[msg.sender]);
     }
 
+    /**
+     * @notice Allows the owner to execute a proposal if the quorum has been met and the voting period has ended.
+     * @param proposalId The ID of the proposal to execute.
+     */
     function executeProposal(uint256 proposalId) public onlyOwner {
         if (block.timestamp <= createTimes[proposalId] + voteTime)
             revert VotingPeriodNotEnded();
@@ -156,6 +188,12 @@ contract DAO {
         emit ProposalExecuted(proposalId);
     }
 
+    /**
+     * @notice Returns the list of all proposals including their descriptions, amounts, and recipients.
+     * @return descriptions Array of proposal descriptions.
+     * @return amounts Array of proposal amounts.
+     * @return recipients Array of recipient addresses for the proposals.
+     */
     function proposalList()
         public
         view
@@ -165,12 +203,20 @@ contract DAO {
         return (descriptions, amounts, recipients);
     }
 
+    /**
+     * @notice Returns the list of all investors in the DAO.
+     * @return Array of investor addresses.
+     */
     function allInvestorsList() public view returns (address[] memory) {
         require(investorList.length > 0, "No investors available");
         return investorList;
     }
 
-    // @dev: function just for testing
+    /**
+     * @notice Returns the balance of a specific investor.
+     * @param investor The address of the investor.
+     * @return The balance of the specified investor.
+     */
     function getInvestorBalance(
         address investor
     ) public view returns (uint256) {
