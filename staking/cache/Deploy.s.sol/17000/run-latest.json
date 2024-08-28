@@ -1,0 +1,19 @@
+{
+  "transactions": [
+    {
+      "rpc": "https://rpc.ankr.com/eth_holesky"
+    },
+    {
+      "rpc": "https://rpc.ankr.com/eth_holesky"
+    },
+    {
+      "rpc": "https://rpc.ankr.com/eth_holesky"
+    },
+    {
+      "rpc": "https://rpc.ankr.com/eth_holesky"
+    },
+    {
+      "rpc": "https://rpc.ankr.com/eth_holesky"
+    }
+  ]
+}
