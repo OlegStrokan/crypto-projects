@@ -1,6 +1,6 @@
 ## Stacking
 
-### This contract is simulation of defi stacking mechanism
+### This contract is simulation of defi stacking mechanism with custom ERC20 token
 
 #### Info:
 
