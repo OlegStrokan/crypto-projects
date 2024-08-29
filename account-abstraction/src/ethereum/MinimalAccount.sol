@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.26;
 
 import {IAccount} from "account-abstraction/lib/account-abstraction/contracts/interfaces/IAccount.sol";
@@ -38,20 +38,35 @@ contract MinimalAccount is IAccount {
     }
 
     // EXTERNAL FUNCTIONS
-    // @notice: A signature is valid, if it's the MinimalAccount owner
 
+    /**
+     * @notice Fallback function to receive Ether.
+     */
     receive() external payable {}
 
+    /**
+     * @notice Validates a User Operation by checking the signature and pre-funding the account if necessary.
+     * @param userOp The packed user operation to validate.
+     * @param userOpHash The hash of the user operation.
+     * @param missingAccountFunds The amount of funds missing to cover the operation.
+     * @return validationData A uint256 representing the validation result.
+     */
     function validateUserOp(
         PackedUserOperation calldata userOp,
         bytes32 userOpHash,
         uint256 missingAccountFunds
     ) external requireFromEntryPoint returns (uint256 validationData) {
-        uint256 validationData = _validateSignature(userOp, userHash);
+        uint256 validationData = _validateSignature(userOp, userOpHash);
         // TODO _validateNonce();
         _payPrefund(missingAccountFunds);
     }
 
+    /**
+     * @notice Executes a transaction from this contract to a destination address.
+     * @param dest The address of the destination account.
+     * @param value The amount of Ether to send.
+     * @param functionData The data of the function to execute.
+     */
     function execute(
         address dest,
         uint256 value,
@@ -66,7 +81,13 @@ contract MinimalAccount is IAccount {
     }
 
     // INTERNAL FUNCTIONS
-    // @notice: EIP version of the signed hash
+
+    /**
+     * @notice Validates the signature of the user operation.
+     * @param userOp The packed user operation to validate.
+     * @param userOpHash The hash of the user operation.
+     * @return validationData A uint256 representing the validation result.
+     */
     function _validateSignature(
         PackedUserOperation calldata userOp,
         bytes32 userOpHash
@@ -81,18 +102,22 @@ contract MinimalAccount is IAccount {
         return SIG_VALIDATION_SUCCESS;
     }
 
-    function _payPrefun(uint256 missingAccountFunds) internal {
+    /**
+     * @notice Pre-funds the account by transferring the missing amount to the EntryPoint.
+     * @param missingAccountFunds The amount of funds missing to cover the operation.
+     */
+    function _payPrefund(uint256 missingAccountFunds) internal {
         if (missingAccountFunds != 0) {
             (bool success, ) = payable(msg.sender).call{
                 value: missingAccountFunds,
                 gas: type(uint256).max
             }("");
-            (success);
+            require(success, "Prefunding failed");
         }
     }
 
     // GETTERS
-    function getEntryPoint() external view returns (address) {
-        return address(i_entryPoint);
-    }
-}
+
+    /**
+     * @notice Returns the address of the EntryPoint contract.
+     *
