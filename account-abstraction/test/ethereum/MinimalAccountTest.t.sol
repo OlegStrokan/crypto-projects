@@ -44,4 +44,38 @@ contract MinimalAccountTest is Test {
 
         assertEq(usdc.balanceOf(address(minimalAccount)), AMOUNT);
     }
+
+    function testRecoverSignedOp() public {
+        assertEq(usdc.balanceOf(address(minimalAccount)), 0);
+        address dest = address(usdc);
+        uint256 value = 0;
+        bytes memory functionData = abi.encodeWithSelector(
+            ERC20Mock.mint.selector,
+            address(minimalAccount),
+            AMOUNT
+        );
+        bytes memory executeCallData = abi.encodeWithSelector(
+            MinimalAccount.execute.selector,
+            dest,
+            value,
+            functionData
+        );
+        PackadUserOperation memory packedUserUp = sendPackedUserOp
+            .generateSignedUserOperation(
+                executeCallData,
+                helperConfig.getConfig(),
+                address(minimalAccount)
+            );
+
+        bytes32 userOperationHash = IEntryPoint(
+            helperConfig.getConfig().entryPoint
+        ).getUserOpHash(packedUserUp);
+
+        address actualSigner = ECDSA.recover(
+            userOperationHash.toEthSignedMessageHash(),
+            packedUserOp.signature
+        );
+
+        assertEq(actualSigner, minimalAccount.owner());
+    }
 }
