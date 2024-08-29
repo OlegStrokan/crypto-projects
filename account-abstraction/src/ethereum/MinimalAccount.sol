@@ -1,5 +1,5 @@
 //SPDX-License-Identifier: MIT
-pragma solidity 0.8.10;
+pragma solidity 0.8.26;
 
 import {IAccount} from "account-abstraction/lib/account-abstraction/contracts/interfaces/IAccount.sol";
 import {PackedUserOperation} from "account-abstraction/lib/account-abstraction/contracts/interfaces/PackedUserOperation.sol";
