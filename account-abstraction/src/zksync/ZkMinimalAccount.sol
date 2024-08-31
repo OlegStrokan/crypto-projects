@@ -42,6 +42,11 @@ contract ZkMinimalAccount is IAccount, Ownable {
 
     receive() external payable {}
 
+    /**
+     * @notice Validates a transaction by checking its signature.
+     * @param _transaction The transaction data to validate.
+     * @return magic The magic value indicating the success of the validation.
+     */
     function validateTransaction(
         bytes32,
         bytes32,
@@ -50,6 +55,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
         return _validateTransaction(_transaction);
     }
 
+    /**
+     * @notice Executes a transaction if called by the bootloader or owner.
+     * @param _transaction The transaction to execute.
+     */
     function executeTransaction(
         bytes32,
         bytes32,
@@ -58,6 +67,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
         _executeTransaction(_transaction);
     }
 
+    /**
+     * @notice Executes a transaction from an external call if the transaction is valid.
+     * @param _transaction The transaction data to execute.
+     */
     function executeTransactionFromOutside(
         Transaction memory _transaction
     ) external payable {
@@ -68,6 +81,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
         _executeTransaction(_transaction);
     }
 
+    /**
+     * @notice Pays for a transaction to the bootloader.
+     * @param _transaction The transaction for which to pay.
+     */
     function payForTransaction(
         bytes32,
         bytes32,
@@ -79,14 +96,23 @@ contract ZkMinimalAccount is IAccount, Ownable {
         }
     }
 
+    /**
+     * @notice Prepares the contract for paymaster payment.
+     * @param _txHash The transaction hash.
+     * @param _possibleSignedHash The possible signed hash.
+     * @param _transaction The transaction data.
+     */
     function prepareForPaymaster(
         bytes32 _txHash,
         _bytes32 _possibleSignedHash,
         Transaction memory _transaction
     ) external payable {}
 
-    //helpers
-
+    /**
+     * @notice Validates the signature of a transaction.
+     * @param _transaction The transaction to validate.
+     * @return magic The magic value indicating if the signature is valid.
+     */
     function _validateTransaction(
         Transaction memory _transaction
     ) internal returns (bytes4 magic) {
@@ -116,6 +142,10 @@ contract ZkMinimalAccount is IAccount, Ownable {
         return magic;
     }
 
+    /**
+     * @notice Executes a transaction with the provided transaction data.
+     * @param _transaction The transaction data to execute.
+     */
     function _executeTransaction(Transaction memory _transaction) internal {
         address to = address(uint160(_transaction.to));
         uint128 value = Utils.safeCastToU128(_transaction.value);
