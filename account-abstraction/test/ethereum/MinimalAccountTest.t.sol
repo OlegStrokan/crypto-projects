@@ -10,7 +10,7 @@ import {ERC20Mock} from "@openzeppelin/contracts/mocks/token/ERC20Mock.sol";
 import {SendPackedUserOp, PackedUserOperation, IEntryPoint} from "script/SendPackedUserOp.s.sol";
 import {ECDSA} from "@openzeppelin/contracts/utils/cryptography/ECDSA.sol";
 
-contract MinimalAccountTest is Test {
+contract MinimalAccountTest is Test, ZkSyncChainChecker {
     using MessageHashUtils for bytes32;
 
     HelperConfig helperConfig;
@@ -29,7 +29,7 @@ contract MinimalAccountTest is Test {
         sendPackedUserOp = new SendPackedUserOp();
     }
 
-    function testOwnerCanExecuteCommands() public {
+    function testOwnerCanExecuteCommands() public skipZkSync {
         assertEq(usdc.balanceOf(address(minimalAccount)), 0);
         address dest = address(usdc);
         uint256 value = 0;
@@ -45,7 +45,7 @@ contract MinimalAccountTest is Test {
         assertEq(usdc.balanceOf(address(minimalAccount)), AMOUNT);
     }
 
-    function testRecoverSignedOp() public {
+    function testRecoverSignedOp() public skipZkSync {
         assertEq(usdc.balanceOf(address(minimalAccount)), 0);
         address dest = address(usdc);
         uint256 value = 0;
@@ -79,7 +79,7 @@ contract MinimalAccountTest is Test {
         assertEq(actualSigner, minimalAccount.owner());
     }
 
-    function testEntryPointCanExecuteCommands() public {
+    function testEntryPointCanExecuteCommands() public skipZkSync {
         assertEq(usdc.balanceOf(address(minimalAccount)), 0);
         address dest = address(usdc);
         uint256 value = 0;
