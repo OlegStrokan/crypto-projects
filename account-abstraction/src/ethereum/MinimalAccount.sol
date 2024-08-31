@@ -71,7 +71,7 @@ contract MinimalAccount is IAccount {
         address dest,
         uint256 value,
         bytes calldata functionData
-    ) external requireFromEntryPoint {
+    ) external requireFromEntryPointOrOwner {
         (bool success, bytes memory result) = dest.call{value: value}(
             functionData
         );
@@ -117,7 +117,9 @@ contract MinimalAccount is IAccount {
     }
 
     // GETTERS
-
     /**
      * @notice Returns the address of the EntryPoint contract.
-     *
+     */
+     function getEntryPoint() external view returns (address) {
+        return address(i_entryPoint);
+    }
