@@ -18,7 +18,11 @@ contract ZkMinimalAccount is IAccount, Ownable {
     using MemoryTransactionHelper for Transaction;
 
     error ZkMinimalAccount__NotEnoughBalance();
-    error ZkMinimalAccount_NotFromBootLoader();
+    error ZkMinimalAccount__NotFromBootLoader();
+    error ZkMinimalAccount__ExecutionFailed();
+    error ZkMinimalAccount__NotFromBootLoaderOrOwner();
+    error ZkMinimalAccount__FailedToPay();
+    error ZkMinimalAccount__InvalidSignature();
 
     modifier requireFromBootloader() {
         if (msg.sender != BOOTLOADER_FORMAL_ADRESS && msg.sender != owner()) {
@@ -52,5 +56,95 @@ contract ZkMinimalAccount is IAccount, Ownable {
         Transaction memory _transanction
     ) external payable requireFromBootLoaderOrOwner {
         _executeTransaction(_transaction);
+    }
+
+    function executeTransactionFromOutside(
+        Transaction memory _transaction
+    ) external payable {
+        bytes4 magic = _validateTransaction(_transaction);
+        if (magic != ACCOUNT_VALIDATION_SUCCESS_MAGIC) {
+            revert ZkMinimalAccount__InvalidSignature();
+        }
+        _executeTransaction(_transaction);
+    }
+
+    function payForTransaction(
+        bytes32,
+        bytes32,
+        Transaction memory _transaction
+    ) external payable {
+        bool success = _transaction.payToTheBootloader();
+        if (!success) {
+            return ZkMinimalAccount__FaildeToPay();
+        }
+    }
+
+    function prepareForPaymaster(
+        bytes32 _txHash,
+        _bytes32 _possibleSignedHash,
+        Transaction memory _transaction
+    ) external payable {}
+
+    //helpers
+
+    function _validateTransaction(
+        Transaction memory _transaction
+    ) internal returns (bytes4 magic) {
+        SystemContractCaller.systemCallWithPropagatedRevert(
+            uint32(gasLeft()),
+            address(NONCE_HOLDER_SYSTEM_CONTRACT),
+            0,
+            abi.encodeCall(
+                INonceHolder.incrementMinNonceIfEquals,
+                (_transaction.nonce)
+            )
+        );
+
+        uint256 totalRequireBalance = _transaction.totalRequireBalance();
+        if (totalRequireBalance > address(this).balance) {
+            revert ZkMinimalAccount__NotEnoughBalance();
+        }
+
+        bytes32 txHash = _transaction.encodeHash();
+        address signer = ECDSA.recover(txHah, _transaction.signature);
+        bool isValidSigner = signer == owner();
+        if (isValidSigner) {
+            magic = ACCOUNT_VALIDATION_SUCCESS_MAGIC;
+        } else {
+            magic = bytes4(0);
+        }
+        return magic;
+    }
+
+    function _executeTransaction(Transaction memory _transaction) internal {
+        address to = address(uint160(_transaction.to));
+        uint128 value = Utils.safeCastToU128(_transaction.value);
+        bytes memory data = _transaction.data;
+
+        if (to == address(DEPLOYER_SYSTEM_CONTRACT)) {
+            uint32 gas = Utils.safeCastToU32(gasLeft());
+            SystemContractsCaller.systemCallWithPropagatedRevert(
+                gas,
+                to,
+                value,
+                data
+            );
+        } else {
+            bool success;
+            assembly {
+                success := call(
+                    gas(),
+                    to,
+                    value,
+                    add(data, 0x20),
+                    mload(data),
+                    0,
+                    0
+                )
+            }
+            if (!success) {
+                revert ZkMinimalAccount__ExecutionFailed();
+            }
+        }
     }
 }
