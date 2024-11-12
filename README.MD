@@ -1,15 +1,15 @@
-#### [Account Abstraction ](https://github.com/OlegStrokan/piedpiper/tree/master/account-abstraction) - Basic asccount abstraction implementation
+#### [Account Abstraction ](https://github.com/OlegStrokan/crypto-projects/tree/master/account-abstraction) - Basic asccount abstraction implementation
 
-#### [Crowdfunding](https://github.com/OlegStrokan/piedpiper/tree/master/crowdfunding) - Basic implementation of real crowdfunding
+#### [Crowdfunding](https://github.com/OlegStrokan/crypto-projects/tree/master/crowdfunding) - Basic implementation of real crowdfunding
 
-#### [DAO Voting](https://github.com/OlegStrokan/piedpiper/tree/master/dao-voting) - Basic of defi stacking mechanism
+#### [DAO Voting](https://github.com/OlegStrokan/crypto-projects/tree/master/dao-voting) - Basic of defi stacking mechanism
 
-#### [DAAP staking](https://github.com/OlegStrokan/piedpiper/tree/master/dapp-stacking) - Basic implementation of stacking mechanism
+#### [DAAP staking](https://github.com/OlegStrokan/crypto-projects/tree/master/dapp-stacking) - Basic implementation of stacking mechanism
 
-#### [NFT market](https://github.com/OlegStrokan/piedpiper/tree/master/ntf-market) - Basic implementation of nft market
+#### [NFT market](https://github.com/OlegStrokan/crypto-projects/tree/master/ntf-market) - Basic implementation of nft market
 
-#### [Payment Channel](https://github.com/OlegStrokan/piedpiper/tree/master/payment-channel) - Baic implementation of defi market
+#### [Payment Channel](https://github.com/OlegStrokan/crypto-projects/tree/master/payment-channel) - Baic implementation of defi market
 
-#### [Staking](https://github.com/OlegStrokan/piedpiper/tree/master/stacking) - My own implementation of stacking mechanism with custom ERC20 token
+#### [Staking](https://github.com/OlegStrokan/crypto-projects/tree/master/staking) - My own implementation of stacking mechanism with custom ERC20 token
 
-#### [Upgradeable Contracts](https://github.com/OlegStrokan/piedpiper/tree/master/dapp-stacking) - Open Zeppelin Upgradeable Contracts implementation (Transparent Proxy Pattern)
+#### [Upgradeable Contracts](https://github.com/OlegStrokan/crypto-projects/tree/master/upgradeable-contracts) - Open Zeppelin Upgradeable Contracts implementation (Transparent Proxy Pattern)
